@@ -11,6 +11,7 @@ import {
   Button,
   Center,
   useToast,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import "./globals.css";
 import Certificate from "./components/Certificate";
@@ -24,7 +25,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState("");
-  const [confettiShown, setConfettiShown] = useState(false);
 
   const fetchUserData = async () => {
     setLoading(true);
@@ -46,9 +46,6 @@ export default function Home() {
       const data = await response.json();
       const user = data.users[0];
       setUserData(user);
-      if (!confettiShown) {
-        setConfettiShown(true);
-      }
     } catch (error) {
       console.error("error fetching user", error);
       setError("Could not find user");
@@ -56,6 +53,12 @@ export default function Home() {
       setLoading(false);
     }
   };
+  const isDesktop = useBreakpointValue({
+    base: false,
+    md: true,
+    lg: true,
+    xl: true,
+  });
 
   return (
     <Container
@@ -65,12 +68,7 @@ export default function Home() {
       flexDirection="column"
       minHeight="100vh"
     >
-      <Stack
-        textAlign={"center"}
-        spacing={{ base: 8, md: 4 }}
-        py={{ base: 20, md: 8 }}
-        flex="1"
-      >
+      <Stack textAlign={"center"} spacing={4} py={8} flex="1">
         <Heading
           fontWeight={600}
           fontSize={{ base: "3xl", sm: "4xl", md: "6xl" }}
@@ -95,7 +93,7 @@ export default function Home() {
           >
             Certificates
           </Text>
-          {""} 🌏
+          {""} 🌎
         </Heading>
         <Text fontSize={"lg"}>
           Generate an achievement certificate based on your Duolingo stats
@@ -132,7 +130,7 @@ export default function Home() {
       )}
 
       {userData && <Certificate user={userData} />}
-      {userData && (
+      {userData && isDesktop && (
         <Confetti
           mode="boom"
           particleCount={440}

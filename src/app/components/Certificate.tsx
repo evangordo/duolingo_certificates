@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   Box,
   Text,
@@ -11,7 +12,8 @@ import {
   Button,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import React from "react";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import { getFlag } from "../utils/flags";
 import { DownloadIcon } from "@chakra-ui/icons";
 
@@ -52,6 +54,27 @@ interface StatBoxProps {
 }
 
 export default function Certificate({ user }: { user: UserProps }) {
+  const certificateRef = useRef<HTMLDivElement>(null);
+
+  const handleDownloadPDF = async () => {
+    if (certificateRef.current) {
+      try {
+        const canvas = await html2canvas(certificateRef.current, {
+          scale: 2,
+        });
+        const imgData = canvas.toDataURL("image/png");
+
+        const pdf = new jsPDF("portrait", "px", "a4");
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`${user.name}_duolingo_achievement_certificate.pdf`);
+      } catch (error) {
+        console.error("failed to generate PDF", error);
+      }
+    }
+  };
   const isDesktop = useBreakpointValue({
     base: false,
     md: true,
@@ -61,6 +84,7 @@ export default function Certificate({ user }: { user: UserProps }) {
   return (
     <>
       <Box
+        ref={certificateRef}
         mt={-4}
         maxW="800px"
         mx="auto"
@@ -148,8 +172,7 @@ export default function Certificate({ user }: { user: UserProps }) {
             />
           </div>
         ))}
-        {/* <LanguagesMastered language="Italian" flag="🇮🇹" stat={43220} />
-        <LanguagesMastered language="French" flag="🇫🇷" stat={7820} /> */}
+
         <Text mt={2} mb={2} fontStyle="italic" fontWeight="bold">
           {user.motivation ? "Motivation: " + user.motivation : null}
         </Text>
@@ -166,7 +189,7 @@ export default function Certificate({ user }: { user: UserProps }) {
           </Text>
         </Flex>
       </Box>
-      <DownloadButton />
+      <DownloadButton onClick={handleDownloadPDF} />
     </>
   );
 }
@@ -235,7 +258,7 @@ const LanguagesMastered = ({
   );
 };
 
-const DownloadButton = () => {
+const DownloadButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <Button
       mx="auto"
@@ -244,6 +267,7 @@ const DownloadButton = () => {
       leftIcon={<DownloadIcon />}
       mt={4}
       maxW={"md"}
+      onClick={onClick}
     >
       Download
     </Button>

@@ -10,7 +10,7 @@ export default function Footer() {
       <Container
         as={Stack}
         maxW={"xl"}
-        py={4}
+        py={6}
         direction={{ base: "column", md: "row" }}
         spacing={4}
         justify={"center"}
@@ -18,10 +18,9 @@ export default function Footer() {
         width="100%"
         align={"center"}
       >
-        <Text>Made by evangordo </Text>
+        <Text ml={4}>Made by evangordo </Text>
 
         <Link href={"/"}>
-          {" "}
           <FaGithub size={24} />
         </Link>
         <Stack direction={"row"} spacing={6}></Stack>
