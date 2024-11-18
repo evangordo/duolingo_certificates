@@ -13,18 +13,18 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import "./globals.css";
-import ConfettiExplosion from "react-confetti-explosion";
 import Certificate from "./components/Certificate";
 import Footer from "./components/Footer";
+import Confetti from "react-confetti-boom";
 
 export default function Home() {
   const toast = useToast();
-  const [isExploding, setIsExploding] = useState(false);
 
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState("");
+  const [confettiShown, setConfettiShown] = useState(false);
 
   const fetchUserData = async () => {
     setLoading(true);
@@ -42,9 +42,13 @@ export default function Home() {
         });
         return;
       }
-      setIsExploding(true);
+
       const data = await response.json();
-      setUserData(data);
+      const user = data.users[0];
+      setUserData(user);
+      if (!confettiShown) {
+        setConfettiShown(true);
+      }
     } catch (error) {
       console.error("error fetching user", error);
       setError("Could not find user");
@@ -91,7 +95,7 @@ export default function Home() {
           >
             Certificates
           </Text>
-          📜
+          {""} 🌏
         </Heading>
         <Text fontSize={"lg"}>
           Generate an achievement cert based on your Duolingo stats
@@ -126,8 +130,19 @@ export default function Home() {
           {error}
         </Text>
       )}
-      {isExploding && <ConfettiExplosion />}
+
       {userData && <Certificate user={userData} />}
+      {userData && (
+        <Confetti
+          mode="boom"
+          particleCount={440}
+          shapeSize={44}
+          colors={["#58ca05", "#c3ebfe"]}
+          effectInterval={1000}
+          spreadDeg={100}
+          launchSpeed={2.1}
+        />
+      )}
       <Footer />
     </Container>
   );

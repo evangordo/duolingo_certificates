@@ -14,7 +14,36 @@ import {
 import React from "react";
 import { DownloadIcon } from "@chakra-ui/icons";
 
-export default function Certificate({ user }: any) {
+interface StreakData {
+  currentStreak: {
+    startDate: string;
+    length: number;
+  };
+}
+
+interface UserProps {
+  name: string;
+  streak: number | null;
+  fromLanguage: string;
+  motivation: string | null;
+  streakData: StreakData;
+  totalXp: number;
+}
+
+interface LanguagesMasteredProps {
+  language: string;
+  flag: string;
+  stat: number;
+}
+
+interface StatBoxProps {
+  bg: string;
+  stat: number;
+  text: string;
+  emoji: string;
+}
+
+export default function Certificate({ user }: { user: UserProps }) {
   const isDesktop = useBreakpointValue({
     base: false,
     md: true,
@@ -86,11 +115,16 @@ export default function Certificate({ user }: any) {
         <SimpleGrid columns={2}>
           <StatBox
             bg="#fee8c0"
-            emoji={user.streak > 0 ? "🔥" : user.streak === 0 ? "❄️" : "❓"}
-            stat={user.streak}
+            emoji={user.streak ? (user.streak > 0 ? "🔥" : "❄️") : "❓"}
+            stat={user.streak ?? 0}
             text={isDesktop ? "Current Streak" : "Streak"}
           />
-          <StatBox bg="#c3ebfe" emoji="⭐️" stat={42232} text="Total XP" />
+          <StatBox
+            bg="#c3ebfe"
+            emoji="⭐️"
+            stat={user.totalXp}
+            text="Total XP"
+          />
         </SimpleGrid>
         <Heading mt={4} fontSize={"2xl"}>
           Languages mastered with their native tongue being
@@ -104,23 +138,20 @@ export default function Certificate({ user }: any) {
         <Divider />
         <Flex justifyContent={"space-between"} m={4}>
           <Text fontSize={{ base: "lg", md: "xl" }} fontStyle={"italic"}>
-            Acitve member since: 12/07/21
+            {user.streakData?.currentStreak?.startDate
+              ? `Active streak since: ${new Date(
+                  user.streakData.currentStreak.startDate
+                ).toLocaleDateString()}`
+              : "No active streak available"}
           </Text>
           <Text fontSize={{ base: "lg", md: "xl" }} fontStyle={"italic"}>
-            🖊️ issued: 12/07/21
+            🖊️ issued: {new Date().toLocaleDateString()}
           </Text>
         </Flex>
       </Box>
       <DownloadButton />
     </>
   );
-}
-
-interface StatBoxProps {
-  bg: string;
-  stat: number;
-  text: string;
-  emoji: string;
 }
 
 const StatBox = ({ bg, stat, text, emoji }: StatBoxProps) => {
@@ -150,12 +181,6 @@ const StatBox = ({ bg, stat, text, emoji }: StatBoxProps) => {
     </Box>
   );
 };
-
-interface LanguagesMasteredProps {
-  language: string;
-  flag: string;
-  stat: number;
-}
 
 const LanguagesMastered = ({
   language,

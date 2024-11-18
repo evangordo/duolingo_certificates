@@ -15,7 +15,7 @@ export async function GET(
       `https://www.duolingo.com/2017-06-30/users?username=${username}`
     );
     const data = await response.json();
-    console.log("user data", data);
+
     return NextResponse.json(data, { status: 200 });
   } catch (error) {
     console.error("error fetching data", error);
