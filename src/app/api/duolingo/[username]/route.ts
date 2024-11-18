@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  context: { params: { username: string } }
+  context: { params: Promise<{ username: string }> }
 ) {
-  const username = await context.params.username;
+  const username = await (await context.params).username;
 
   if (!username) {
     return NextResponse.json({ error: "no user" }, { status: 400 });
