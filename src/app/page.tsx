@@ -31,8 +31,21 @@ export default function Home() {
     setError("");
     setUserData(null);
 
+    if (!username.trim()) {
+      toast({
+        title: "Please enter a username",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch(`/api/duolingo/${username}`);
+      const data = await response.json();
       if (!response.ok) {
         toast({
           title: `Unable to fetch user`,
@@ -43,9 +56,21 @@ export default function Home() {
         return;
       }
 
-      const data = await response.json();
+      if (!data || !data.users || data.users.length === 0) {
+        setError(`No user found with username "${username}"`);
+        toast({
+          title: "User not found",
+          position: "top",
+          status: "warning",
+          duration: 9000,
+          isClosable: true,
+        });
+        return;
+      }
+
       const user = data.users[0];
       setUserData(user);
+      setError("");
     } catch (error) {
       console.error("error fetching user", error);
       setError("Could not find user");

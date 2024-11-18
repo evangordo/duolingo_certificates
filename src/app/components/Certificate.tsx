@@ -51,6 +51,7 @@ interface StatBoxProps {
   stat: number;
   text: string;
   emoji: string;
+  boxShadow: string;
 }
 
 export default function Certificate({ user }: { user: UserProps }) {
@@ -59,16 +60,34 @@ export default function Certificate({ user }: { user: UserProps }) {
   const handleDownloadPDF = async () => {
     if (certificateRef.current) {
       try {
+        const box = certificateRef.current.getBoundingClientRect();
+
         const canvas = await html2canvas(certificateRef.current, {
           scale: 2,
+          width: box.width,
+          height: box.height,
+          windowWidth: box.width,
+          windowHeight: box.height,
+          logging: false,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: null,
         });
-        const imgData = canvas.toDataURL("image/png");
 
-        const pdf = new jsPDF("portrait", "px", "a4");
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        const imgData = canvas.toDataURL("image/png", 1.0);
 
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        const pdfWidth = box.width;
+        const pdfHeight = box.height;
+
+        const pdf = new jsPDF({
+          orientation: pdfWidth > pdfHeight ? "landscape" : "portrait",
+          unit: "px",
+          format: [pdfWidth, pdfHeight],
+          hotfixes: ["px_scaling"],
+        });
+
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight, "", "FAST");
+
         pdf.save(`duolingo_achievement_certificate.pdf`);
       } catch (error) {
         console.error("failed to generate PDF", error);
@@ -90,8 +109,9 @@ export default function Certificate({ user }: { user: UserProps }) {
         mx="auto"
         p={8}
         borderWidth={4}
-        borderColor={"#58ca05"}
-        borderStyle="double"
+        borderColor={"#57cc02"}
+        // borderStyle="double"
+        rounded={"2xl"}
         boxShadow="2xl"
         bg={useColorModeValue("white", "gray.800")}
         position="relative"
@@ -104,7 +124,8 @@ export default function Certificate({ user }: { user: UserProps }) {
           right={4}
           bottom={4}
           border="4px solid"
-          // borderColor="black"
+          borderColor="#37454e"
+          rounded={"2xl"}
           pointerEvents="none"
           zIndex={1}
         />
@@ -121,18 +142,16 @@ export default function Certificate({ user }: { user: UserProps }) {
         >
           🌍
         </Box>
-
         <Heading
-          bg=" #59cb09"
+          bg="#57cc02"
           fontSize={{ base: "xl", md: "5xl" }}
-          color={"white"}
-          rounded={"lg"}
-          boxShadow={"3xl"}
+          color="white"
+          rounded="2xl"
           p={4}
           textAlign="center"
           textShadow="1px 1px 2px rgba(0, 0, 0, 0.5)"
-          border="2px solid #3a8e05"
-          borderRadius="md"
+          boxShadow="0px 6px 0px rgb(88, 167, 0), 0px 8px 15px rgba(0, 0, 0, 0.2)"
+          borderRadius="2xl"
           mb={4}
         >
           Duolingo Certificate of Achievement
@@ -146,19 +165,21 @@ export default function Certificate({ user }: { user: UserProps }) {
         </Text>
         <SimpleGrid columns={2}>
           <StatBox
-            bg="#fee8c0"
+            bg="#ff9600"
             emoji={user.streak ? (user.streak > 0 ? "🔥" : "❄️") : "❄️"}
             stat={user.streak ?? 0}
             text={isDesktop ? "Current Streak" : "Streak"}
+            boxShadow={"rgb(203, 120, 0)"}
           />
           <StatBox
-            bg="#c3ebfe"
+            bg="#49c0f8"
             emoji="⭐️"
             stat={user.totalXp}
             text="Total XP"
+            boxShadow={"rgb(23, 154, 208)"}
           />
         </SimpleGrid>
-        <Heading mt={4} fontSize={"2xl"}>
+        <Heading mt={4} fontSize={{ base: "md", md: "2xl" }}>
           Languages mastered with their native tongue being: {""}
           {getFlag(user.fromLanguage)}
         </Heading>
@@ -173,18 +194,18 @@ export default function Certificate({ user }: { user: UserProps }) {
           </div>
         ))}
 
-        <Text mt={2} mb={2} fontStyle="italic" fontWeight="bold">
+        <Text mt={4} mb={2} fontStyle="italic" fontWeight="bold">
           {user.motivation ? "Motivation: " + user.motivation : null}
         </Text>
         <Divider />
         <Flex justifyContent={"space-between"} m={4}>
-          <Text fontSize={{ base: "lg", md: "xl" }} fontStyle={"italic"}>
+          <Text fontSize={{ base: "md", md: "xl" }} fontStyle={"italic"}>
             {user.streakData?.currentStreak?.startDate &&
               `Active streak since: ${new Date(
                 user.streakData.currentStreak.startDate
               ).toLocaleDateString()}`}
           </Text>
-          <Text fontSize={{ base: "lg", md: "xl" }} fontStyle={"italic"}>
+          <Text fontSize={{ base: "md", md: "xl" }} fontStyle={"italic"}>
             🖊️ issued: {new Date().toLocaleDateString()}
           </Text>
         </Flex>
@@ -194,14 +215,15 @@ export default function Certificate({ user }: { user: UserProps }) {
   );
 }
 
-const StatBox = ({ bg, stat, text, emoji }: StatBoxProps) => {
+const StatBox = ({ bg, stat, text, emoji, boxShadow }: StatBoxProps) => {
   return (
     <Box
-      borderRadius={"lg"}
+      borderRadius="lg"
       bg={bg}
+      rounded="3xl"
       m={4}
-      borderWidth={"2px"}
-      borderColor={"black"}
+      borderColor="rgb(229, 229, 229)"
+      boxShadow={`0px 4px 0px ${boxShadow}, 0px 8px 15px rgba(0, 0, 0, 0.2)`}
     >
       <Stat>
         <Flex
@@ -209,13 +231,16 @@ const StatBox = ({ bg, stat, text, emoji }: StatBoxProps) => {
           justifyContent={"center"}
           textAlign={"center"}
           gap={1}
+          mt={2}
         >
           <Text fontSize={{ base: "lg", md: "3xl" }}> {emoji}</Text>
-          <StatNumber fontSize={{ base: "lg", md: "3xl" }}>{stat}</StatNumber>
+          <StatNumber fontSize={{ base: "lg", md: "3xl" }} color={"white"}>
+            {stat}
+          </StatNumber>
         </Flex>
       </Stat>
 
-      <Text mb={1} fontWeight={"bold"}>
+      <Text mb={2} p={1} fontSize={"lg"} fontWeight={"bold"}>
         {text}
       </Text>
     </Box>
@@ -229,12 +254,15 @@ const LanguagesMastered = ({
 }: LanguagesMasteredProps) => {
   return (
     <Box
+      mx="auto"
+      maxW={"2xl"}
       mt={8}
-      borderRadius={"lg"}
+      rounded="3xl"
       bg="#eff1f3"
       p={2}
       borderWidth={"2px"}
-      borderColor={"black"}
+      borderColor="rgb(229, 229, 229)"
+      boxShadow="0px 4px 0px rgb(229, 229, 229), 0px 8px 15px rgba(0, 0, 0, 0.2)"
     >
       <Flex gap={2} p={2} textAlign={"center"} justifyContent={"space-between"}>
         <Flex alignItems="center" gap={2}>
