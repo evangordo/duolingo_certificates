@@ -9,11 +9,13 @@ export default function Footer() {
     <Box>
       <Container
         as={Stack}
-        maxW={"6xl"}
+        maxW={"xl"}
         py={4}
         direction={{ base: "column", md: "row" }}
         spacing={4}
         justify={"center"}
+        mt="auto"
+        width="100%"
         align={"center"}
       >
         <Text>Made by evangordo </Text>

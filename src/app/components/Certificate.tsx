@@ -12,6 +12,7 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import React from "react";
+import { getFlag } from "../utils/flags";
 import { DownloadIcon } from "@chakra-ui/icons";
 
 interface StreakData {
@@ -21,6 +22,12 @@ interface StreakData {
   };
 }
 
+interface Courses {
+  title: string;
+  learningLanguage?: string;
+  xp: number;
+}
+
 interface UserProps {
   name: string;
   streak: number | null;
@@ -28,6 +35,7 @@ interface UserProps {
   motivation: string | null;
   streakData: StreakData;
   totalXp: number;
+  courses: Courses[];
 }
 
 interface LanguagesMasteredProps {
@@ -115,7 +123,7 @@ export default function Certificate({ user }: { user: UserProps }) {
         <SimpleGrid columns={2}>
           <StatBox
             bg="#fee8c0"
-            emoji={user.streak ? (user.streak > 0 ? "🔥" : "❄️") : "❓"}
+            emoji={user.streak ? (user.streak > 0 ? "🔥" : "❄️") : "❄️"}
             stat={user.streak ?? 0}
             text={isDesktop ? "Current Streak" : "Streak"}
           />
@@ -127,22 +135,31 @@ export default function Certificate({ user }: { user: UserProps }) {
           />
         </SimpleGrid>
         <Heading mt={4} fontSize={"2xl"}>
-          Languages mastered with their native tongue being
-          {user.fromLanguage}
+          Languages mastered with their native tongue being: {""}
+          {getFlag(user.fromLanguage)}
         </Heading>
-        <LanguagesMastered language="Italian" flag="🇮🇹" stat={43220} />
-        <LanguagesMastered language="French" flag="🇫🇷" stat={7820} />
+
+        {user.courses.map((iter) => (
+          <div key={iter.title}>
+            <LanguagesMastered
+              language={iter.title}
+              flag={getFlag(iter.learningLanguage)}
+              stat={iter.xp}
+            />
+          </div>
+        ))}
+        {/* <LanguagesMastered language="Italian" flag="🇮🇹" stat={43220} />
+        <LanguagesMastered language="French" flag="🇫🇷" stat={7820} /> */}
         <Text mt={2} mb={2} fontStyle="italic" fontWeight="bold">
-          {user.motivation !== null && "Motivation:" + " " + user.motivation}
+          {user.motivation ? "Motivation: " + user.motivation : null}
         </Text>
         <Divider />
         <Flex justifyContent={"space-between"} m={4}>
           <Text fontSize={{ base: "lg", md: "xl" }} fontStyle={"italic"}>
-            {user.streakData?.currentStreak?.startDate
-              ? `Active streak since: ${new Date(
-                  user.streakData.currentStreak.startDate
-                ).toLocaleDateString()}`
-              : "No active streak available"}
+            {user.streakData?.currentStreak?.startDate &&
+              `Active streak since: ${new Date(
+                user.streakData.currentStreak.startDate
+              ).toLocaleDateString()}`}
           </Text>
           <Text fontSize={{ base: "lg", md: "xl" }} fontStyle={"italic"}>
             🖊️ issued: {new Date().toLocaleDateString()}
@@ -189,10 +206,10 @@ const LanguagesMastered = ({
 }: LanguagesMasteredProps) => {
   return (
     <Box
+      mt={8}
       borderRadius={"lg"}
       bg="#eff1f3"
       p={2}
-      m={4}
       borderWidth={"2px"}
       borderColor={"black"}
     >
@@ -222,7 +239,7 @@ const DownloadButton = () => {
   return (
     <Button
       mx="auto"
-      color={"green"}
+      color={"#5aca00"}
       bg="black"
       leftIcon={<DownloadIcon />}
       mt={4}

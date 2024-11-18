@@ -68,7 +68,7 @@ export default function Home() {
       <Stack
         textAlign={"center"}
         spacing={{ base: 8, md: 4 }}
-        py={{ base: 20, md: 14 }}
+        py={{ base: 20, md: 8 }}
         flex="1"
       >
         <Heading
@@ -98,10 +98,10 @@ export default function Home() {
           {""} 🌏
         </Heading>
         <Text fontSize={"lg"}>
-          Generate an achievement cert based on your Duolingo stats
+          Generate an achievement certificate based on your Duolingo stats
         </Text>
         <Center>
-          <InputGroup size="lg" maxW={"md"} borderRadius={"lg"}>
+          <InputGroup size="lg" maxW={"md"} borderRadius={"lg"} mb={2}>
             <Input
               pr="3rem"
               type="text"
