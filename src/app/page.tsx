@@ -1,95 +1,134 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { useState } from "react";
+import {
+  Container,
+  Heading,
+  Stack,
+  Text,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Button,
+  Center,
+  useToast,
+} from "@chakra-ui/react";
+import "./globals.css";
+import ConfettiExplosion from "react-confetti-explosion";
+import Certificate from "./components/Certificate";
+import Footer from "./components/Footer";
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const toast = useToast();
+  const [isExploding, setIsExploding] = useState(false);
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [error, setError] = useState("");
+
+  const fetchUserData = async () => {
+    setLoading(true);
+    setError("");
+    setUserData(null);
+
+    try {
+      const response = await fetch(`/api/duolingo/${username}`);
+      if (!response.ok) {
+        toast({
+          title: `Unable to fetch user`,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        return;
+      }
+      setIsExploding(true);
+      const data = await response.json();
+      setUserData(data);
+    } catch (error) {
+      console.error("error fetching user", error);
+      setError("Could not find user");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Container
+      maxW={"4xl"}
+      textAlign={"center"}
+      display="flex"
+      flexDirection="column"
+      minHeight="100vh"
+    >
+      <Stack
+        textAlign={"center"}
+        spacing={{ base: 8, md: 4 }}
+        py={{ base: 20, md: 14 }}
+        flex="1"
+      >
+        <Heading
+          fontWeight={600}
+          fontSize={{ base: "3xl", sm: "4xl", md: "6xl" }}
+          color={"#59cb09"}
+        >
+          Duolingo
+          <Text
+            as={"span"}
+            color={"black"}
+            ml={2}
+            position={"relative"}
+            _after={{
+              content: "''",
+              width: "full",
+              height: "20%",
+              position: "absolute",
+              bottom: 1,
+              left: 0,
+              bg: "#59cb09",
+              zIndex: -1,
+            }}
           >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            Certificates
+          </Text>
+          📜
+        </Heading>
+        <Text fontSize={"lg"}>
+          Generate an achievement cert based on your Duolingo stats
+        </Text>
+        <Center>
+          <InputGroup size="lg" maxW={"md"} borderRadius={"lg"}>
+            <Input
+              pr="3rem"
+              type="text"
+              placeholder="Enter username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+            <InputRightElement width="5.5rem">
+              <Button
+                size="lg"
+                p={4}
+                mr={0}
+                textColor={"#59cb09"}
+                onClick={fetchUserData}
+                bg="black"
+                isLoading={loading}
+              >
+                Generate
+              </Button>
+            </InputRightElement>
+          </InputGroup>
+        </Center>
+      </Stack>
+      {error && (
+        <Text color="red.500" mt={4}>
+          {error}
+        </Text>
+      )}
+      {isExploding && <ConfettiExplosion />}
+      {userData && <Certificate user={userData} />}
+      <Footer />
+    </Container>
   );
 }
