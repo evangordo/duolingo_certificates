@@ -69,7 +69,7 @@ export default function Certificate({ user }: { user: UserProps }) {
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
         pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`${user.name}_duolingo_achievement_certificate.pdf`);
+        pdf.save(`duolingo_achievement_certificate.pdf`);
       } catch (error) {
         console.error("failed to generate PDF", error);
       }
