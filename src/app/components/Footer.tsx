@@ -20,7 +20,11 @@ export default function Footer() {
       >
         <Text ml={4}>Made by evangordo </Text>
 
-        <Link href={"/"}>
+        <Link
+          href={"https://github.com/evangordo/duolingo_certs"}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <FaGithub size={24} />
         </Link>
         <Stack direction={"row"} spacing={6}></Stack>
