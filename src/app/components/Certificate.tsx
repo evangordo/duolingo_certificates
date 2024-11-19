@@ -1,4 +1,6 @@
-import { useRef } from "react";
+import React, { useCallback, useRef } from "react";
+import { toPng } from "html-to-image";
+
 import {
   Box,
   Text,
@@ -12,8 +14,6 @@ import {
   Button,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
 import { getFlag } from "../utils/flags";
 import { DownloadIcon } from "@chakra-ui/icons";
 
@@ -55,45 +55,30 @@ interface StatBoxProps {
 }
 
 export default function Certificate({ user }: { user: UserProps }) {
-  const certificateRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
-  const handleDownloadPDF = async () => {
-    if (certificateRef.current) {
-      try {
-        const box = certificateRef.current.getBoundingClientRect();
-
-        const canvas = await html2canvas(certificateRef.current, {
-          scale: 2,
-          width: box.width,
-          height: box.height,
-          windowWidth: box.width,
-          windowHeight: box.height,
-          logging: false,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: null,
-        });
-
-        const imgData = canvas.toDataURL("image/png", 1.0);
-
-        const pdfWidth = box.width;
-        const pdfHeight = box.height;
-
-        const pdf = new jsPDF({
-          orientation: pdfWidth > pdfHeight ? "landscape" : "portrait",
-          unit: "px",
-          format: [pdfWidth, pdfHeight],
-          hotfixes: ["px_scaling"],
-        });
-
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight, "", "FAST");
-
-        pdf.save(`duolingo_achievement_certificate.pdf`);
-      } catch (error) {
-        console.error("failed to generate PDF", error);
-      }
+  const downloadButton = useCallback(() => {
+    if (ref.current === null) {
+      return;
     }
-  };
+
+    toPng(ref.current, {
+      cacheBust: true,
+      backgroundColor: "#ffffff",
+      canvasWidth: ref.current.offsetWidth + 200,
+      canvasHeight: ref.current.offsetHeight + 200,
+      quality: 1.0,
+    })
+      .then((dataUrl) => {
+        const link = document.createElement("a");
+        link.download = `${user.name}_duolingo_achievement_certificate.png`;
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [user.name]);
   const isDesktop = useBreakpointValue({
     base: false,
     md: true,
@@ -103,14 +88,14 @@ export default function Certificate({ user }: { user: UserProps }) {
   return (
     <>
       <Box
-        ref={certificateRef}
+        ref={ref}
         mt={-4}
-        maxW="800px"
         mx="auto"
         p={8}
         borderWidth={4}
         borderColor={"#57cc02"}
         // borderStyle="double"
+        data-certificate="true"
         rounded={"2xl"}
         boxShadow="2xl"
         bg={useColorModeValue("white", "gray.800")}
@@ -144,6 +129,7 @@ export default function Certificate({ user }: { user: UserProps }) {
         </Box>
         <Heading
           bg="#57cc02"
+          maxW={"3xl"}
           fontSize={{ base: "xl", md: "5xl" }}
           color="white"
           rounded="2xl"
@@ -194,7 +180,13 @@ export default function Certificate({ user }: { user: UserProps }) {
           </div>
         ))}
 
-        <Text mt={4} mb={2} fontStyle="italic" fontWeight="bold">
+        <Text
+          mt={4}
+          mb={2}
+          fontStyle="italic"
+          fontSize={"xl"}
+          fontWeight="bold"
+        >
           {user.motivation ? "Motivation: " + user.motivation : null}
         </Text>
         <Divider />
@@ -210,7 +202,7 @@ export default function Certificate({ user }: { user: UserProps }) {
           </Text>
         </Flex>
       </Box>
-      <DownloadButton onClick={handleDownloadPDF} />
+      <DownloadButton onClick={downloadButton} />
     </>
   );
 }
@@ -255,7 +247,7 @@ const LanguagesMastered = ({
   return (
     <Box
       mx="auto"
-      maxW={"2xl"}
+      maxW={"730px"}
       mt={8}
       rounded="3xl"
       bg="#eff1f3"
