@@ -160,7 +160,7 @@ export default function Home() {
           mode="boom"
           particleCount={440}
           shapeSize={44}
-          colors={["#58ca05", "#c3ebfe"]}
+          colors={["#57cc02", "#ff9600", "#49c0f8"]}
           effectInterval={1000}
           spreadDeg={100}
           launchSpeed={2.1}
