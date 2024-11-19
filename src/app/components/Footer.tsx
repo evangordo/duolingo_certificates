@@ -1,8 +1,8 @@
 "use client";
-import { FaGithub } from "react-icons/fa";
+// import { FaGithub } from "react-icons/fa";
 
 import { Box, Container, Stack, Text } from "@chakra-ui/react";
-import Link from "next/link";
+// import Link from "next/link";
 
 export default function Footer() {
   return (
