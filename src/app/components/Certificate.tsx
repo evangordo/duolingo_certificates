@@ -111,6 +111,7 @@ export default function Certificate({ user }: { user: UserProps }) {
           borderColor="#37454e"
           rounded={"2xl"}
           zIndex={1}
+          boxShadow={"2xl"}
           // bgSize="24px 24px"
         />
 
@@ -191,7 +192,7 @@ export default function Certificate({ user }: { user: UserProps }) {
         <Center>
           <Divider maxW={"730px"} borderColor="#54cb00" borderWidth={"1px"} />
         </Center>
-        <Flex justifyContent={"space-between"} m={4} mb={1}>
+        <Flex justifyContent={"space-between"} m={0} mb={1} mt={2}>
           <Text fontSize={{ base: "md", md: "lg" }} fontStyle={"italic"}>
             {user.streakData?.currentStreak?.startDate &&
               `Active streak since: ${new Date(
@@ -228,8 +229,8 @@ const StatBox = ({ bg, stat, text, emoji, boxShadow }: StatBoxProps) => {
           gap={1}
           mt={4}
         >
-          <Text fontSize={{ base: "lg", md: "4xl" }}> {emoji}</Text>
-          <StatNumber fontSize={{ base: "lg", md: "4xl" }} color={"white"}>
+          <Text fontSize={{ base: "md", md: "4xl" }}> {emoji}</Text>
+          <StatNumber fontSize={{ base: "md", md: "4xl" }} color={"white"}>
             {stat}
           </StatNumber>
         </Flex>

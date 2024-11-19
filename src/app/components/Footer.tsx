@@ -29,7 +29,7 @@ export default function Footer() {
         </Link>
 
         <Link
-          href={"https://github.com/evangordo"}
+          href={"https://github.com/evangordo/duolingo_certs"}
           target="_blank"
           rel="noopener noreferrer"
         >
