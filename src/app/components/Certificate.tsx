@@ -13,6 +13,7 @@ import {
   Divider,
   Button,
   useBreakpointValue,
+  Center,
 } from "@chakra-ui/react";
 import { getFlag } from "../utils/flags";
 import { DownloadIcon } from "@chakra-ui/icons";
@@ -89,13 +90,11 @@ export default function Certificate({ user }: { user: UserProps }) {
     <>
       <Box
         ref={ref}
-        mt={-4}
+        // mt={-4}
         mx="auto"
-        p={8}
+        p={12}
         borderWidth={4}
         borderColor={"#57cc02"}
-        // borderStyle="double"
-        data-certificate="true"
         rounded={"2xl"}
         boxShadow="2xl"
         bg={useColorModeValue("white", "gray.800")}
@@ -111,8 +110,8 @@ export default function Certificate({ user }: { user: UserProps }) {
           border="4px solid"
           borderColor="#37454e"
           rounded={"2xl"}
-          pointerEvents="none"
           zIndex={1}
+          // bgSize="24px 24px"
         />
 
         <Box
@@ -142,11 +141,11 @@ export default function Certificate({ user }: { user: UserProps }) {
         >
           Duolingo Certificate of Achievement
         </Heading>
-        <Text mt={2} fontStyle="italic">
+        <Text mt={2} fontSize={{ base: "md", md: "lg" }} fontStyle="italic">
           This certifies that
         </Text>
         <Heading> {user.name}</Heading>
-        <Text fontStyle="italic">
+        <Text fontSize={{ base: "md", md: "lg" }} fontStyle="italic">
           has scored the following achievements in Duolingo
         </Text>
         <SimpleGrid columns={2}>
@@ -181,28 +180,32 @@ export default function Certificate({ user }: { user: UserProps }) {
         ))}
 
         <Text
-          mt={4}
-          mb={2}
+          mt={6}
+          mb={4}
           fontStyle="italic"
           fontSize={"xl"}
           fontWeight="bold"
         >
           {user.motivation ? "Motivation: " + user.motivation : null}
         </Text>
-        <Divider />
-        <Flex justifyContent={"space-between"} m={4}>
-          <Text fontSize={{ base: "md", md: "xl" }} fontStyle={"italic"}>
+        <Center>
+          <Divider maxW={"730px"} borderColor="#54cb00" borderWidth={"1px"} />
+        </Center>
+        <Flex justifyContent={"space-between"} m={4} mb={1}>
+          <Text fontSize={{ base: "md", md: "lg" }} fontStyle={"italic"}>
             {user.streakData?.currentStreak?.startDate &&
               `Active streak since: ${new Date(
                 user.streakData.currentStreak.startDate
               ).toLocaleDateString()}`}
           </Text>
-          <Text fontSize={{ base: "md", md: "xl" }} fontStyle={"italic"}>
-            🖊️ issued: {new Date().toLocaleDateString()}
+          <Text fontSize={{ base: "md", md: "lg" }} fontStyle={"italic"}>
+            Date issued: {new Date().toLocaleDateString()}
           </Text>
         </Flex>
       </Box>
-      <DownloadButton onClick={downloadButton} />
+      <Center>
+        <DownloadButton onClick={downloadButton} />
+      </Center>
     </>
   );
 }
@@ -223,16 +226,16 @@ const StatBox = ({ bg, stat, text, emoji, boxShadow }: StatBoxProps) => {
           justifyContent={"center"}
           textAlign={"center"}
           gap={1}
-          mt={2}
+          mt={4}
         >
-          <Text fontSize={{ base: "lg", md: "3xl" }}> {emoji}</Text>
-          <StatNumber fontSize={{ base: "lg", md: "3xl" }} color={"white"}>
+          <Text fontSize={{ base: "lg", md: "4xl" }}> {emoji}</Text>
+          <StatNumber fontSize={{ base: "lg", md: "4xl" }} color={"white"}>
             {stat}
           </StatNumber>
         </Flex>
       </Stat>
 
-      <Text mb={2} p={1} fontSize={"lg"} fontWeight={"bold"}>
+      <Text mb={2} p={1} fontSize={"xl"} fontWeight={"bold"}>
         {text}
       </Text>
     </Box>
@@ -281,9 +284,13 @@ const LanguagesMastered = ({
 const DownloadButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <Button
-      mx="auto"
+      rounded="2xl"
+      bg="#eff1f3"
+      p={2}
+      borderWidth={"2px"}
+      borderColor="rgb(229, 229, 229)"
+      boxShadow="0px 4px 0px rgb(229, 229, 229), 0px 8px 15px rgba(0, 0, 0, 0.2)"
       color={"#5aca00"}
-      bg="black"
       leftIcon={<DownloadIcon />}
       mt={4}
       maxW={"md"}

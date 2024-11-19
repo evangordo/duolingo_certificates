@@ -124,15 +124,25 @@ export default function Home() {
           Generate an achievement certificate based on your Duolingo stats
         </Text>
         <Center>
-          <InputGroup size="lg" maxW={"md"} borderRadius={"lg"} mb={2}>
+          <InputGroup
+            size="lg"
+            maxW={"md"}
+            borderRadius={"lg"}
+            mb={2}
+            borderColor="rgb(229, 229, 229)"
+            boxShadow="0px 4px 0px rgb(229, 229, 229), 0px 8px 15px rgba(0, 0, 0, 0.2)"
+            rounded={"2xl"}
+            borderWidth={"2px"}
+          >
             <Input
               pr="3rem"
               type="text"
               placeholder="Enter username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              _focus={{ borderColor: "transparent", boxShadow: "none" }}
             />
-            <InputRightElement width="5.5rem">
+            <InputRightElement width="5.5rem" rounded={"2xl"}>
               <Button
                 size="lg"
                 p={4}
@@ -141,6 +151,7 @@ export default function Home() {
                 onClick={fetchUserData}
                 bg="black"
                 isLoading={loading}
+                rounded={"2xl"}
               >
                 Generate
               </Button>
