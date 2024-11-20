@@ -1,6 +1,7 @@
 "use client";
 import { FaGithub } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { FaProductHunt } from "react-icons/fa";
 
 import { Box, Container, Stack, Text } from "@chakra-ui/react";
 import Link from "next/link";
@@ -34,6 +35,14 @@ export default function Footer() {
           rel="noopener noreferrer"
         >
           <FaGithub size={24} />
+        </Link>
+
+        <Link
+          href={"https://www.producthunt.com/posts/duolingo-certificates"}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FaProductHunt size={24} />
         </Link>
         <Stack direction={"row"} spacing={6}></Stack>
       </Container>
